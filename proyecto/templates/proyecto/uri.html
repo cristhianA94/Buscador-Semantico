@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>SBC</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'proyecto/estilos.css' %}" type="text/css"  >
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="{% url 'proyecto' %}">Buscador</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </nav>
+    <div class="container">
+      <br>
+      <h2>{{uri}}</h2>
+      <br>
+      {% if datos %}
+          <table class="table table-bordered" id="tblMain">
+            <thead>
+              <tr>
+                <th scope="col">Propiedad</th>
+                <th scope="col">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for dato in datos %}
+              <tr>
+                <td><a href="{{dato.0}}">{{dato.0}}</a></td>
+                <td>{{dato.1}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+              <h4>No hay datos disponibles.</h4>
+          {% endif %}
+          <div class="script">
+            <form class="form-inline" method="post" action="{% url 'uri_info' %}">
+              {% csrf_token %}
+              <div class="form-group mb-2">
+                {{ form.as_p }}
+                <!-- <input type="text" class="form-control" id="uri" placeholder="Seleccione una uri" required> -->
+              </div>
+              <button type="submit" class="btn btn-primary mb-2 mx-sm-3">Buscar</button>
+            </form>
+          </div>
+    </div>
+  </body>
+  <script>
+    var input = document.getElementById("id_uri");
+    var tbl = document.getElementById("tblMain");
+            if (tbl != null) {
+                for (var i = 0; i < tbl.rows.length; i++) {
+                    for (var j = 0; j < tbl.rows[i].cells.length; j++)
+                        tbl.rows[i].cells[j].onclick = function () { getval(this); };
+                }
+            }
+            function getval(cel) {
+              var string =cel.innerHTML;
+              if (string.indexOf("http") == 0 ) {
+
+                console.log(cel.innerHTML);
+                input.setAttribute("value",cel.innerHTML);
+              }
+            }
+
+  </script>
+</html>

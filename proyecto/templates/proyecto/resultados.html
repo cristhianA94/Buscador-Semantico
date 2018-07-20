@@ -1,0 +1,17 @@
+{% extends 'proyecto/index.html' %}
+{% block content %}
+<h3>{{query}}</h3>
+<p class="badge badge-primary">{{ datos|length }} resultados encontrados.</p>
+  {% for dato in datos%}
+  <div class="card" >
+    <div class="card-body">
+      <ul class="list-unstyled">
+        <li >
+          <h3 ><a href="{% url 'detalles' dato.2 %}" >{{dato.1}}</a> </h3>
+        </li>
+        <footer class="blockquote-footer"><a href="{{dato.0}}" >{{dato.0}}</a></footer>
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}

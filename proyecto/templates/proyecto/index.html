@@ -25,7 +25,9 @@
         <div class="card" >
           {% load static %}
           <div class="card-body">
-            <img class="img-fluid"  src="{% static 'proyecto/media/logo.png' %}" >
+            <a href="{% url 'proyecto' %}">
+              <img class="img-fluid"  src="{% static 'proyecto/media/logo.png' %}" >
+            </a>
             <form  method="post">
               {% csrf_token %}
               <div class="form-group">

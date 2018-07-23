@@ -42,15 +42,11 @@ class Detalles(TemplateView):
         datos = ejecutarConsulta(uri)
         lng = len(datos)
 
-        if(id>2706):
+        if(id in range(2706,2982)):
             a = array(datos)
             x=a[5,1]
             y=a[6,1]
             n=a[9,1]
-
-            print("lon: ",x)
-            print("lat: ",y)
-            print("nombre: ",n)
             lon =x
             lat =y
         else:
@@ -81,14 +77,31 @@ class Detalles(TemplateView):
 def run_elasticsearch_query(query_keywords):
     es = Elasticsearch()
     # Build the search query
+    # query = {
+    #     "query": {
+    #         "term": {
+    #             'nombre': query_keywords
+    #         }
+    #     }
+    # }
+
     query = {
-        "query": {
-            "match": {
-                'nombre': query_keywords
+    "query": {
+        "match_phrase_prefix" : {
+            "nombre" : {
+                "query" : query_keywords,
+                "max_expansions" : 20
             }
         }
     }
+
+}
+
+
+
     res = es.search(index="edificios", doc_type="edificio", body=query)
+
+# res = es.search(index="test-index", body={"query": {"match_all": {}}})
     return res['hits']['hits']
 
 

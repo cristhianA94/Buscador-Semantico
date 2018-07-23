@@ -26,7 +26,8 @@ class ProyectoView(TemplateView):
             form = SparqlForm
             datos=[]
             for result in hospitales:
-                datos.append((result["_source"]["uri"],result["_source"]["nombre"],result["_source"]["id"]))
+                datos.append((result["_source"]["uri"],result["_source"]["nombre"],result["_source"]["id"],numUri(result["_source"]["uri"])))
+
 
         args = {'form':form,'query':query,'datos':datos}
         return render(request, template_name, args)
@@ -96,14 +97,46 @@ def run_elasticsearch_query(query_keywords):
     }
 
 }
-
-
-
     res = es.search(index="edificios", doc_type="edificio", body=query)
-
-# res = es.search(index="test-index", body={"query": {"match_all": {}}})
     return res['hits']['hits']
 
+def numUri(uri):
+    sparql = SPARQLWrapper("http://localhost:8890/sparql")
+    query ="""
+            SELECT count(*)
+            WHERE {
+                <%s> ?s ?name
+            }
+    """%uri
+    if "madrid" in uri:
+        uris = (uri, uri,uri, uri)
+        query ="""
+            SELECT count(*)
+            WHERE {{
+            <%s> v:adr ?o.
+            ?o ?s ?name.
+            }UNION{
+            <%s> v:geo ?o.
+            ?o ?s ?name.
+            }
+            UNION{
+            <%s> v:tel ?o.
+            ?o ?s ?name.
+            }
+            UNION{
+            <%s> v:org ?o.
+            ?o ?s ?name.
+            }
+            }
+        """%uris
+    sparql.setReturnFormat(JSON)
+
+    sparql.setQuery(query)
+    results = sparql.query().convert()
+    datos=0
+    for result in results["results"]["bindings"]:
+        datos= result["callret-0"]["value"]
+    return datos
 
 def ejecutarConsulta(uri):
     sparql = SPARQLWrapper("http://localhost:8890/sparql")
